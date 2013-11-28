@@ -58,13 +58,14 @@ def makeprimes(start, max_val):
         i += 1
     return primes
 
+print sum(makeprimes(3,2000000))
 
-
-someprimes = makeprimes(3,1000000)
+# someprimes = makeprimes(3,1000000)
 # print factor(13195,[])
 # print factor(600851475143, [])
 
-print someprimes[10000]
+
+# print someprimes[10000]
 
 # primes = makeprimes(3,int(math.ceil(13195/2.0)))
 # primes.reverse()
