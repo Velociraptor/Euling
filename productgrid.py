@@ -1,4 +1,4 @@
-
+import math
 
 def parseline(dict, linenum, line):
     line = line.split()
@@ -11,72 +11,127 @@ def parselines(lines):
         parseline(grid, row, text)
         
     return grid
+
+def listproduct(list,howmany):
+    #max product of lenght howmany from list of ints
+    #reutrns 2tuple: (maxproduct, [no1, no2, no3, ...])
+    maxproduct = (0, [])
+    for i in range(len(list)+1-howmany):
+        iszero = False
+        theproduct = 1
+        thenumbers = []
+        for j in range(howmany):
+            next = list[i+j]
+            if next == 0: 
+                iszero = True
+                break
+            thenumbers.append(next)
+            theproduct *= next
+        
+        if iszero: continue
+        if theproduct > maxproduct[0]: maxproduct = (theproduct, thenumbers)
     
-def multgrid(grid, howmany, dir):
+    return maxproduct
+    
+def maxproduct(grid, lists, howmany):
+    #max product of len howmany for lists from grid
+    runningmax = (0, [])
+    
+    for list in lists:
+        list = [grid[item] for item in list]
+        maxp = listproduct(list, howmany)
+        if maxp[0] > runningmax[0]: runningmax = maxp
+        
+    return runningmax
+            
+    
+def multgrid(grid, howmany):
     
     done = False
     max = 0
+    lints = []
     
-    if (dir == "up") or (dir == "down"):
-        order = grid.keys()
-        order.sort()
-        order = [(y,x) for (x,y) in order]
-        next = (0,1)
+    #Up/Down
+    coords = grid.keys()
+    coords.sort()      
+    coords = [(y,x) for (x,y) in coords] #only for squares
+    order = []
+    for i in range(len(coords)):
+        order.append(coords[i])
+        print i
+        if (i == len(coords)-1):
+            lints.append(order)
+            order = []
+            break
+        if (coords[i][1] != coords[i+1][1]):
+            lints.append(order)
+            order = []
         
-        for item in order: print item 
         
-    elif (dir == "left") or (dir == "right"):
-        order = grid.keys()
-        order.sort()
-        next = (1,0)
+    #left/right
+    coords = grid.keys()
+    coords.sort()
+    order = []
+    for i in range(len(coords)):
+        order.append(coords[i])
+        if (i == len(coords)-1):
+            lints.append(order)
+            order = []
+            break
+        if (coords[i][0] != coords[i+1][0]):
+            lints.append(order)
+            order = []
         
-        for item in order: print item 
-        
-    elif (dir == "diag"):
+    #diagonalley
+    order = [] 
+    keys = grid.keys()
+    keys.sort()
+    max = keys[-1]
+    
+    #right hand diagonals
+    next = (1,1)
+    for i in range(max[0]-howmany+2):
+        pt = (i,0)
+        while pt[0] <= max[0] and pt[1] <= max[1]:
+            order.append(pt)
+            pt = pt[0] + next[0], pt[1] + next[1]
+        lints.append(order)
         order = []
-        next = (1,1)
-        keys = grid.keys()
-        keys.sort()
-        max = keys[-1]
         
-        #right hand diagonals
-        for i in range(max[0]-howmany+2):
-            pt = (i,0)
-            while pt[0] <= max[0] and pt[1] <= max[1]:
-                order.append(pt)
-                pt = pt[0] + next[0], pt[1] + next[1]  
-            order.append((-1,-1))
-            
-        for i in range(max[1]-howmany+2):
-            pt = (0,i)
-            while pt[0] <= max[0] and pt[1] <= max[1]:
-                order.append(pt)
-                pt = pt[0] + next[0], pt[1] + next[1]
-            order.append((-1,-1))
-            
-        #need LEFT HAND diagonals!
-        #they go here
+    for i in range(max[1]-howmany+2):
+        pt = (0,i)
+        while pt[0] <= max[0] and pt[1] <= max[1]:
+            order.append(pt)
+            pt = pt[0] + next[0], pt[1] + next[1]
+        lints.append(order)
+        order = []
         
-        for item in order: print item
+    #LEFT HAND diagonals!
+    next = (-1,1)
+    for i in range(max[0]-howmany+2):
+        pt = (max[0]-i,0)
+        while pt[0] >= 0 and pt[1] <= max[1]:
+            order.append(pt)
+            pt = pt[0] + next[0], pt[1] + next[1]
+        lints.append(order)
+        order = []
+        
+    for i in range(max[0]-howmany+2):
+        pt = (max[0],i)
+        while pt[0] >= 0 and pt[1] <= max[1]:
+            order.append(pt)
+            pt = pt[0] + next[0], pt[1] + next[1]
+        lints.append(order)
+        order = []
             
+        
+    #AT THIS POINT, ORDER is a list o lists.
     
-    # for i in range(len(order) - howmany):
-        # product = 1
-        # goahead = False
-        
-        # for j in range(howmany):
-            # locs.append(order[i+j])
-            # val = grid[locs[-1]]
-            # if val == 0:
-                # goahead = True
-                # break
-            # product *= grid[loc]
-        
-        # if product > max:
-            # max = (max, loc)
-        
-        
-        
+    maxthing = maxproduct(grid, lints, howmany)
+    return maxthing
+    
+            
+
             
             
     
@@ -107,4 +162,4 @@ lines = [(0, ln0),(1, ln1),(2, ln2),(3, ln3),(4, ln4),
          (15, ln15),(16, ln16),(17, ln17),(18, ln18),(19, ln19)]
         
 grid = parselines(lines)
-multgrid(grid, 5, 'diag')
+print multgrid(grid, 4)
