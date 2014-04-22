@@ -28,29 +28,36 @@ def getAbundant(max):
     
 def getPossibleSums(nums):
     sums = []
-    while len(nums) > 1:
+    while len(nums) > 0:
         a = nums.pop()
-        for num in nums:
-            sums.append(a+num)
+        sums.append(a+a)
+        if len(nums) > 0:
+            for num in nums:
+                sums.append(a+num)
     
     return (list(set(sums)))
     
 
 
 def otherNums(nums, max):
-    others = range(1,max+1)
-    for num in others:
-        if num in nums:
-            others.remove(num)
+    i = 1
+    others = []
+    while i <= max:
+        if i not in nums:
+            others.append(i)
+            i+=1
+        else:
+            i+=1
     return others
             
     
         
 if __name__ == "__main__":
-    #This is currently incorrect: 197740174
+    #Incorrect: 197740174, 197740110
     nums = getAbundant(28123)
     sums = getPossibleSums(nums)
     others = otherNums(sums, 28123)
     print sum(others)
     
+    #print sum(others)
     
